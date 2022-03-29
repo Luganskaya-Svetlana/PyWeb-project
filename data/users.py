@@ -9,7 +9,8 @@ class User(SqlAlchemyBase, UserMixin):
     __tablename__ = 'users'
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
-    name = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    email = sqlalchemy.Column(sqlalchemy.String, nullable=False, unique=True)
+    name = sqlalchemy.Column(sqlalchemy.String, nullable=False, unique=True)
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     desserts = orm.relation("Dessert", back_populates='user')
 
