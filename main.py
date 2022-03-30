@@ -1,12 +1,12 @@
 from flask_login import current_user
 from flask import Flask
-from flask import redirect, render_template
+from flask import redirect, render_template, url_for, request
 from data import db_session
 from data.users import User
 from flask_login import LoginManager
 from flask_login import login_user, logout_user, login_required
 from flask_wtf import FlaskForm
-from wtforms import EmailField, PasswordField, BooleanField
+from wtforms import EmailField, PasswordField, BooleanField, FileField
 from wtforms import SubmitField, StringField, TextAreaField
 from wtforms.validators import DataRequired
 
@@ -14,6 +14,11 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'our_secret_key'
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+
+class DownloadPic(FlaskForm):
+    field = FileField("Прикрепите фотографию")
+    fin = SubmitField("Отправить")
 
 
 class LoginForm(FlaskForm):
@@ -29,6 +34,7 @@ class RegisterForm(FlaskForm):
     password = PasswordField("Пароль", validators=[DataRequired()])
     password_again = PasswordField("Пароль ещё раз", validators=[DataRequired()])
     about = TextAreaField("Немного о себе")
+    photo = FileField("Ваш аватар")
     submit = SubmitField("Зарегистрироваться")
 
 
@@ -47,6 +53,7 @@ def logout():
 
 @app.route("/")
 def default_page():
+    # return redirect("/download_photo")
     return render_template("base.html", title="WorldDessert", current_user=current_user)
 
 
@@ -72,6 +79,7 @@ def register():
         user.name = form.name.data
         user.set_password(form.password.data)
         user.about = form.about.data
+        # photo =
         db_sess.add(user)
         db_sess.commit()
         login_user(user, remember=True)
@@ -96,6 +104,36 @@ def login():
                                message="Неправильный логин или пароль",
                                form=form)
     return render_template("login.html", title="Авторизация", form=form)
+
+
+@app.route("/download_photo", methods=["GET", "POST"])
+def pic():
+    form = DownloadPic()
+    if form.validate_on_submit():
+        print("validation completed")
+        catalog_name = url_for("static", filename="img/user_avatars")
+        print(catalog_name)
+        print(form.field)
+        f = request.FILES[form.field.name]
+        with open(catalog_name[1:] + "/1.png", mode='wb') as picfile:
+            picfile.write(f.read())
+        # with open(catalog_name[1:] + "/1.png", mode='wb') as picfile:
+        #     print("file was opened")
+        #     print(form.field.data)
+        #     print(form.field)
+        #     picfile.write(form.field.data)
+        return redirect("/")
+    return render_template("download_pic.html", title="Загрузить фото", form=form)
+
+
+@app.route("/desserts")
+def dessrets_main_page():
+    return redirect("/")
+
+
+@app.route("/profile")
+def profile():
+    return redirect("/")
 
 
 def main():
