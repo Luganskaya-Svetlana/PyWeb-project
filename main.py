@@ -43,7 +43,7 @@ class RegisterForm(FlaskForm):
 
 class DessertForm(FlaskForm):
     title = StringField('Название десерта:', validators=[DataRequired()])
-    content = TextAreaField('Описание', validators=[DataRequired()])
+    content = TextAreaField('Описание')
     country = StringField('Родина десерта:', validators=[DataRequired()])
     submit = SubmitField("Добавить")
 
@@ -65,7 +65,7 @@ def logout():
 def default_page():
     db_sess = db_session.create_session()
     desserts = db_sess.query(Dessert)
-    return render_template("index.html", current_user=current_user, desserts=desserts)
+    return render_template("index.html", title="Cicero's desserts", current_user=current_user, desserts=desserts)
 
 
 @app.route("/register", methods=["GET", "POST"])
