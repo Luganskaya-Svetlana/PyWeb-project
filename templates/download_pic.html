@@ -1,15 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <form action="" method="post">
-        {{form.hidden_tag()}}
-        {{form.field.label}} <br>
-        {{form.field}} <br>
-        {% for error in form.field.errors %}
-            <div class="alert alert-danger" role="alert">
-                {{error}}
-            </div>
-        {% endfor %}
-        {{form.fin(type="submit", class="btn btn-primary")}}
+    <form action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data">
+        <input type="file" name="file" accept="image/*" multiple>
+        <input type="submit" name="send">
+
     </form>
 {% endblock content %}
