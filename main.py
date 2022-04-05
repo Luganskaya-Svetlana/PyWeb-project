@@ -6,7 +6,7 @@ from flask_login import login_user, logout_user, login_required
 from flask_wtf import FlaskForm
 from wtforms import EmailField, PasswordField, BooleanField, FileField
 from wtforms import SubmitField, StringField, TextAreaField
-from wtforms.validators import DataRequired, ValidationError
+from wtforms.validators import DataRequired
 
 from data import db_session
 from data.users import User
@@ -46,10 +46,6 @@ class DessertForm(FlaskForm):
     content = TextAreaField('Описание', validators=[DataRequired()])
     country = StringField('Родина десерта:', validators=[DataRequired()])
     submit = SubmitField("Добавить")
-
-    def validate_country(self, field):
-        if not if_country(field.data):
-            raise ValidationError('Это не страна')
 
 
 @login_manager.user_loader
@@ -155,19 +151,19 @@ def profile():
 def add_dessert():
     form = DessertForm()
     if form.validate_on_submit():
-        print(1)
-        db_sess = db_session.create_session()
-        dessert = Dessert()
-        dessert.title = form.title.data
-        dessert.content = form.content.data
-        dessert.country = form.country.data
-        dessert.user_id = current_user.id
-        print(2)
-        current_user.desserts.append(dessert)  # тут все падает
-        db_sess.merge(current_user)
-        db_sess.commit()
-        print(3)
-        return redirect('/')
+        if if_country(form.country.data):
+            db_sess = db_session.create_session()
+            dessert = Dessert()
+            dessert.title = form.title.data
+            dessert.content = form.content.data
+            dessert.country = form.country.data
+            current_user.desserts.append(dessert)
+            db_sess.merge(current_user)
+            db_sess.commit()
+            return redirect('/')
+        else:
+            return render_template('desserts.html', title='Добавление десерта', form=form,
+                                   message=f'{form.country.data} - не страна')
     return render_template('desserts.html', title='Добавление десерта', form=form)
 
 
