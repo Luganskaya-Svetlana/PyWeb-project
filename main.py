@@ -99,16 +99,15 @@ def register():
         user.set_password(form.password.data)
         user.about = form.about.data
         photo = request.files.get("avatar")
-
         db_sess.add(user)
         db_sess.commit()
-        if photo is not None:
+        if photo:
             url = url_for('static', filename="img/user_avatars")[1:]
             photo.save(url + f"/{photo.filename}")
             os.rename(url + f"/{photo.filename}", url + f"/{user.id}{photo.filename[photo.filename.find('.'):]}")
         else:
             url = url_for('static', filename=f"img")[1:]
-            extension = DEFAULT_USER_AVATAR[DEFAULT_DESSERT_AVATAR.find('.'):]
+            extension = DEFAULT_USER_AVATAR[DEFAULT_USER_AVATAR.find('.'):]
             copy(url + f"/{DEFAULT_USER_AVATAR}", url + f"/user_avatars/{user.id}{extension}")
         login_user(user, remember=True)
 
