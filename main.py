@@ -26,11 +26,6 @@ DEFAULT_USER_AVATAR = "default_user_pic.png"
 DEFAULT_DESSERT_AVATAR = "default_des_pic.png"
 
 
-class DownloadPic(FlaskForm):
-    field = FileField("Прикрепите фотографию")
-    fin = SubmitField("Отправить")
-
-
 class LoginForm(FlaskForm):
     email_or_name = StringField("Ник или почта", validators=[DataRequired()])
     password = PasswordField("Пароль", validators=[DataRequired()])
@@ -132,44 +127,6 @@ def login():
                                message="Неправильный логин или пароль",
                                form=form)
     return render_template("login.html", title="Авторизация", form=form)
-
-
-@app.route("/download_photo", methods=["GET", "POST"])
-def pic():
-    # form = DownloadPic()
-    # if form.validate_on_submit():
-    #     print("validation completed")
-    #     catalog_name = url_for("static", filename="img/user_avatars")
-    #     print(catalog_name)
-    #     print(form.field)
-    #     f = request.FILES[form.field.name]
-    #     with open(catalog_name[1:] + "/1.png", mode='wb') as picfile:
-    #         picfile.write(f.read())
-    #     # with open(catalog_name[1:] + "/1.png", mode='wb') as picfile:
-    #     #     print("file was opened")
-    #     #     print(form.field.data)
-    #     #     print(form.field)
-    #     #     picfile.write(form.field.data)
-    #     return redirect("/")
-    # return render_template("download_pic.html", title="Загрузить фото", form=form)
-    return render_template("download_pic.html")
-
-
-@app.route("/upload", methods=["POST"])
-def upload():
-    target = os.path.join(APP_ROUTE, "static/img/")
-    print(target)
-
-    if not os.path.isdir(target):
-        os.mkdir(target)
-
-    for file in request.files.getlist("file"):
-        print(file)
-        filename = file.filename
-        destination = "/".join([target, filename])
-        print(destination)
-        file.save(destination)
-    return "complete"
 
 
 # @app.route("/desserts")
