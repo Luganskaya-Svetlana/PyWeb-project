@@ -63,8 +63,9 @@ def logout():
 
 @app.route("/")
 def default_page():
-    # return redirect("/download_photo")
-    return render_template("base.html", title="WorldDessert", current_user=current_user)
+    db_sess = db_session.create_session()
+    desserts = db_sess.query(Dessert)
+    return render_template("index.html", current_user=current_user, desserts=desserts)
 
 
 @app.route("/register", methods=["GET", "POST"])
