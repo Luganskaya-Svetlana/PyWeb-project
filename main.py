@@ -1,14 +1,17 @@
 from flask_login import current_user
 from flask import Flask
 from flask import redirect, render_template, url_for, request
-from data import db_session
-from data.users import User
 from flask_login import LoginManager
 from flask_login import login_user, logout_user, login_required
 from flask_wtf import FlaskForm
 from wtforms import EmailField, PasswordField, BooleanField, FileField
 from wtforms import SubmitField, StringField, TextAreaField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, ValidationError
+
+from data import db_session
+from data.users import User
+from data.desserts import Dessert
+from data.map import if_country
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'our_secret_key'
@@ -36,6 +39,17 @@ class RegisterForm(FlaskForm):
     about = TextAreaField("Немного о себе")
     photo = FileField("Ваш аватар")
     submit = SubmitField("Зарегистрироваться")
+
+
+class DessertForm(FlaskForm):
+    title = StringField('Название десерта:', validators=[DataRequired()])
+    content = TextAreaField('Описание', validators=[DataRequired()])
+    country = StringField('Родина десерта:', validators=[DataRequired()])
+    submit = SubmitField("Добавить")
+
+    def validate_country(self, field):
+        if not if_country(field.data):
+            raise ValidationError('Это не страна')
 
 
 @login_manager.user_loader
@@ -126,14 +140,35 @@ def pic():
     return render_template("download_pic.html", title="Загрузить фото", form=form)
 
 
-@app.route("/desserts")
-def dessrets_main_page():
-    return redirect("/")
+# @app.route("/desserts")
+# def desserts_main_page():
+#     return redirect("/")
 
 
 @app.route("/profile")
 def profile():
     return redirect("/")
+
+
+@app.route('/desserts', methods=['GET', 'POST'])
+@login_required
+def add_dessert():
+    form = DessertForm()
+    if form.validate_on_submit():
+        print(1)
+        db_sess = db_session.create_session()
+        dessert = Dessert()
+        dessert.title = form.title.data
+        dessert.content = form.content.data
+        dessert.country = form.country.data
+        dessert.user_id = current_user.id
+        print(2)
+        current_user.desserts.append(dessert)  # тут все падает
+        db_sess.merge(current_user)
+        db_sess.commit()
+        print(3)
+        return redirect('/')
+    return render_template('desserts.html', title='Добавление десерта', form=form)
 
 
 def main():

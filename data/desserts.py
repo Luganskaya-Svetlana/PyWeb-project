@@ -10,7 +10,7 @@ class Dessert(SqlAlchemyBase):
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
     title = sqlalchemy.Column(sqlalchemy.String, nullable=False)
-    image = sqlalchemy.Column(sqlalchemy.String, nullable=False)  # путь до картинки
+    image = sqlalchemy.Column(sqlalchemy.String, nullable=False, default='путь до дефолтной пикчи')  # путь до картинки
     content = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     country = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     created_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)

@@ -4,12 +4,15 @@ import requests
 
 
 def if_country(country):
-    response = requests.get(
-        f"http://geocode-maps.yandex.ru/1.x/?apikey=40d1649f-0493-4b70-98ba-98533de7710b&geocode={country}&format=json")
-    if response:
-        json_response = response.json()
-        return json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]["metaDataProperty"][
-                   "GeocoderMetaData"]["kind"] == 'country'
+    try:
+        response = requests.get(
+            f"http://geocode-maps.yandex.ru/1.x/?apikey=40d1649f-0493-4b70-98ba-98533de7710b&geocode={country}&format=json")
+        if response:
+            json_response = response.json()
+            return json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]["metaDataProperty"][
+                       "GeocoderMetaData"]["kind"] == 'country'
+    except IndexError:
+        return False
     return False
 
 
@@ -27,11 +30,11 @@ def map_image(country):
 
 
 '''Для тестирования'''
-# if __name__ == '__main__':
-#     print(if_country('Россия'))
-#     print(if_country('Москва'))
-#     print(if_country('россия'))
-#     print(if_country('Австралия'))
+if __name__ == '__main__':
+    print(if_country(''))
+    print(if_country('-'))
+    print(if_country('россия'))
+    print(if_country('Австралия'))
 #     map_file1 = "map1.png"
 #     with open(map_file1, "wb") as file:
 #         file.write(map_image('Италия'))
