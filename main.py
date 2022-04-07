@@ -1,12 +1,13 @@
 from flask_login import current_user
-from flask import Flask
+from flask import Flask, abort
 from flask import redirect, render_template, url_for, request
 from flask_login import LoginManager
 from flask_login import login_user, logout_user, login_required
 from flask_wtf import FlaskForm
 from wtforms import EmailField, PasswordField, BooleanField, FileField
 from wtforms import SubmitField, StringField, TextAreaField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, ValidationError
+import sqlalchemy
 
 from data import db_session
 from data.users import User
@@ -43,9 +44,13 @@ class RegisterForm(FlaskForm):
 
 class DessertForm(FlaskForm):
     title = StringField('Название десерта:', validators=[DataRequired()])
-    content = TextAreaField('Описание')
+    content = TextAreaField('Описание', validators=[DataRequired()])
     country = StringField('Родина десерта:', validators=[DataRequired()])
     submit = SubmitField("Добавить")
+
+    def validate_country(form, field):
+        if not if_country(field.data):
+            raise ValidationError(f'{field.data} - не страна')
 
 
 @login_manager.user_loader
@@ -64,7 +69,7 @@ def logout():
 @app.route("/")
 def default_page():
     db_sess = db_session.create_session()
-    desserts = db_sess.query(Dessert)
+    desserts = db_sess.query(Dessert)[::-1]
     return render_template("index.html", title="Cicero's desserts", current_user=current_user, desserts=desserts)
 
 
@@ -137,9 +142,9 @@ def pic():
     return render_template("download_pic.html", title="Загрузить фото", form=form)
 
 
-# @app.route("/desserts")
-# def desserts_main_page():
-#     return redirect("/")
+@app.route("/desserts")
+def desserts_main_page():
+    return redirect("/")
 
 
 @app.route("/profile")
@@ -147,25 +152,65 @@ def profile():
     return redirect("/")
 
 
-@app.route('/desserts', methods=['GET', 'POST'])
+@app.route('/desserts/add', methods=['GET', 'POST'])
 @login_required
 def add_dessert():
     form = DessertForm()
     if form.validate_on_submit():
-        if if_country(form.country.data):
-            db_sess = db_session.create_session()
-            dessert = Dessert()
+        db_sess = db_session.create_session()
+        dessert = Dessert()
+        dessert.title = form.title.data
+        dessert.content = form.content.data
+        dessert.country = form.country.data
+        try:
+            current_user.desserts.append(dessert)
+        except sqlalchemy.orm.exc.DetachedInstanceError:
+            return render_template('desserts.html', title='Добавление десерта', form=form,
+                                   message='Ой! Что-то пошло не так. Попробуйте снова.') # надеюсь, удалю потом эту строчку
+        db_sess.merge(current_user)
+        db_sess.commit()
+        return redirect('/')
+    return render_template('desserts.html', title='Добавление десерта', form=form)
+
+
+@app.route('/desserts/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_desserts(id):
+    form = DessertForm()
+    if request.method == "GET":
+        db_sess = db_session.create_session()
+        dessert = db_sess.query(Dessert).filter(Dessert.id == id, Dessert.user == current_user).first()
+        if dessert:
+            form.title.data = dessert.title
+            form.content.data = dessert.content
+            form.country.data = dessert.country
+        else:
+            abort(404)
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        dessert = db_sess.query(Dessert).filter(Dessert.id == id, Dessert.user == current_user).first()
+        if dessert:
             dessert.title = form.title.data
             dessert.content = form.content.data
             dessert.country = form.country.data
-            current_user.desserts.append(dessert)
-            db_sess.merge(current_user)
             db_sess.commit()
             return redirect('/')
         else:
-            return render_template('desserts.html', title='Добавление десерта', form=form,
-                                   message=f'{form.country.data} - не страна')
-    return render_template('desserts.html', title='Добавление десерта', form=form)
+            abort(404)
+    return render_template('desserts.html', title='Редактирование десерта', form=form)
+
+
+@app.route('/desserts/delete/<int:id>', methods=['GET'])
+@login_required
+def delete_dessert(id):
+    db_sess = db_session.create_session()
+    dessert = db_sess.query(Dessert).filter(Dessert.id == id, Dessert.user == current_user).first()
+    if dessert:
+        db_sess.delete(dessert)
+        db_sess.commit()
+    else:
+        abort(404)
+    return redirect('/')
 
 
 def main():

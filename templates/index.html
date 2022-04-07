@@ -13,8 +13,8 @@
             </div>
             {% if current_user.is_authenticated and current_user == item.user %}
                 <div>
-                    <a href="/edit_dessert/{{ item.id }}" class="btn btn-outline-warning">Изменить</a>
-                    <a href="/delete_dessert/{{ item.id }}" class="btn btn-outline-danger">Удалить</a>
+                    <a href="/desserts/edit/{{ item.id }}" class="btn btn-outline-warning">Изменить</a>
+                    <a href="/desserts/delete/{{ item.id }}" class="btn btn-outline-danger">Удалить</a>
                 </div>
             {% endif %}
         </div>
