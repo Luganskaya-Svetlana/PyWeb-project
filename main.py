@@ -1,3 +1,6 @@
+import os.path
+
+from shutil import copy
 from flask_login import current_user
 from flask import Flask, abort
 from flask import redirect, render_template, url_for, request
@@ -19,10 +22,9 @@ app.config['SECRET_KEY'] = 'our_secret_key'
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-
-class DownloadPic(FlaskForm):
-    field = FileField("Прикрепите фотографию")
-    fin = SubmitField("Отправить")
+APP_ROUTE = os.path.dirname(os.path.abspath(__file__))
+DEFAULT_USER_AVATAR = "default_user_pic.png"
+DEFAULT_DESSERT_AVATAR = "default_des_pic.png"
 
 
 class LoginForm(FlaskForm):
@@ -38,7 +40,6 @@ class RegisterForm(FlaskForm):
     password = PasswordField("Пароль", validators=[DataRequired()])
     password_again = PasswordField("Пароль ещё раз", validators=[DataRequired()])
     about = TextAreaField("Немного о себе")
-    photo = FileField("Ваш аватар")
     submit = SubmitField("Зарегистрироваться")
 
 
@@ -95,10 +96,19 @@ def register():
         user.name = form.name.data
         user.set_password(form.password.data)
         user.about = form.about.data
-        # photo =
+        photo = request.files.get("avatar")
         db_sess.add(user)
         db_sess.commit()
+        if photo:
+            url = url_for('static', filename="img/user_avatars")[1:]
+            photo.save(url + f"/{photo.filename}")
+            os.rename(url + f"/{photo.filename}", url + f"/{user.id}{photo.filename[photo.filename.find('.'):]}")
+        else:
+            url = url_for('static', filename=f"img")[1:]
+            extension = DEFAULT_USER_AVATAR[DEFAULT_USER_AVATAR.find('.'):]
+            copy(url + f"/{DEFAULT_USER_AVATAR}", url + f"/user_avatars/{user.id}{extension}")
         login_user(user, remember=True)
+
         return redirect("/")
     return render_template("register.html", title="Регистрация", form=form)
 
@@ -121,25 +131,6 @@ def login():
                                form=form)
     return render_template("login.html", title="Авторизация", form=form)
 
-
-@app.route("/download_photo", methods=["GET", "POST"])
-def pic():
-    form = DownloadPic()
-    if form.validate_on_submit():
-        print("validation completed")
-        catalog_name = url_for("static", filename="img/user_avatars")
-        print(catalog_name)
-        print(form.field)
-        f = request.FILES[form.field.name]
-        with open(catalog_name[1:] + "/1.png", mode='wb') as picfile:
-            picfile.write(f.read())
-        # with open(catalog_name[1:] + "/1.png", mode='wb') as picfile:
-        #     print("file was opened")
-        #     print(form.field.data)
-        #     print(form.field)
-        #     picfile.write(form.field.data)
-        return redirect("/")
-    return render_template("download_pic.html", title="Загрузить фото", form=form)
 
 
 @app.route("/desserts")

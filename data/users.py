@@ -11,7 +11,6 @@ class User(SqlAlchemyBase, UserMixin):
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
     email = sqlalchemy.Column(sqlalchemy.String, nullable=False, unique=True)
     name = sqlalchemy.Column(sqlalchemy.String, nullable=False, unique=True)
-    way_to_avatar = sqlalchemy.Column(sqlalchemy.String)
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     desserts = orm.relation("Dessert", back_populates='user')
 
