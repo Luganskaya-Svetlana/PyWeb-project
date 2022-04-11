@@ -4,9 +4,9 @@
 <h2>Все десерты</h2>
     {% for item in desserts %}
         <div class="col-md6 border rounded">
-            <h4>{{ item.title }}</h4>
+            <a href="/desserts/{{item.id}}"><h4>{{ item.title }}</h4></a>
             <div>
-                {{ item.content }}
+                {{ item.content.split('\r\n')[0] }}
             </div>
             <div>
                 Автор - {{ item.user.name }}, Дата добавления - {{ item.created_date }}

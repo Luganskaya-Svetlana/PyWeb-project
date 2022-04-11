@@ -132,10 +132,15 @@ def login():
     return render_template("login.html", title="Авторизация", form=form)
 
 
+@app.route("/desserts/<int:id>", methods=['GET', 'POST'])
+def dessert_page(id):
+    db_sess = db_session.create_session()
+    dessert = db_sess.query(Dessert).filter(Dessert.id == id).first()
+    if dessert:
+        return render_template('dessert_page.html', dessert=dessert, title='Просмотр десерта')
+    else:
+        abort(404)
 
-@app.route("/desserts")
-def desserts_main_page():
-    return redirect("/")
 
 
 @app.route("/profile")

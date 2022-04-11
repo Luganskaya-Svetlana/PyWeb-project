@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{{dessert.title}}</h1>
+<h6>Добавил(а): {{dessert.user.name}}</h6>
+{% for item in dessert.content.split('\r\n')%}
+    <p>{{item}}</p>
+{% endfor %}
+{% if current_user.is_authenticated and current_user == dessert.user %}
+                <div>
+                    <a href="/desserts/edit/{{ dessert.id }}" class="btn btn-outline-warning">Изменить</a>
+                    <a href="/desserts/delete/{{ dessert.id }}" class="btn btn-outline-danger">Удалить</a>
+                </div>
+{% endif %}
+{% endblock content %}
