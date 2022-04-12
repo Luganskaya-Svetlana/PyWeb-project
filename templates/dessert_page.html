@@ -4,7 +4,7 @@
 <h1>{{dessert.title}}</h1>
 <h6>Добавил(а): {{dessert.user.name}}, {{dessert.created_date}}</h6>
 <img src="../static/img/dessert_photos/{{dessert.id}}.jpg"
-       alt="{{dessert.name}}">
+       alt="{{dessert.title}}">
 {% for item in dessert.content.split('\r\n')%}
     <p>{{item}}</p>
 {% endfor %}

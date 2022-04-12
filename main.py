@@ -39,7 +39,7 @@ class RegisterForm(FlaskForm):
     name = StringField("Ваш никнейм: ", validators=[DataRequired()])
     password = PasswordField("Пароль", validators=[DataRequired()])
     password_again = PasswordField("Пароль ещё раз", validators=[DataRequired()])
-    about = TextAreaField("Немного о себе")
+    about = TextAreaField("Немного о себе", validators=[DataRequired()])
     submit = SubmitField("Зарегистрироваться")
 
 
@@ -102,11 +102,10 @@ def register():
         if photo:
             url = url_for('static', filename="img/user_avatars")[1:]
             photo.save(url + f"/{photo.filename}")
-            os.rename(url + f"/{photo.filename}", url + f"/{user.id}{photo.filename[photo.filename.find('.'):]}")
+            os.rename(url + f"/{photo.filename}", url + f"/{user.id}.jpg")
         else:
             url = url_for('static', filename=f"img")[1:]
-            extension = DEFAULT_USER_AVATAR[DEFAULT_USER_AVATAR.find('.'):]
-            copy(url + f"/{DEFAULT_USER_AVATAR}", url + f"/user_avatars/{user.id}{extension}")
+            copy(url + f"/{DEFAULT_USER_AVATAR}", url + f"/user_avatars/{user.id}.jpg")
         login_user(user, remember=True)
         return redirect("/")
     return render_template("register.html", title="Регистрация", form=form)
@@ -131,6 +130,16 @@ def login():
     return render_template("login.html", title="Авторизация", form=form)
 
 
+@app.route("/profile/<int:id>", methods=['GET', 'POST'])
+def profile(id):
+    db_sess = db_session.create_session()
+    user = db_sess.query(User).filter(User.id == id).first()
+    if user:
+        return render_template('user_page.html', user=user, title='Просмотр профиля')
+    else:
+        abort(404)
+
+
 @app.route("/desserts/<int:id>", methods=['GET', 'POST'])
 def dessert_page(id):
     db_sess = db_session.create_session()
@@ -139,11 +148,6 @@ def dessert_page(id):
         return render_template('dessert_page.html', dessert=dessert, title='Просмотр десерта')
     else:
         abort(404)
-
-
-@app.route("/profile")
-def profile():
-    return redirect("/")
 
 
 @app.route('/desserts/add', methods=['GET', 'POST'])

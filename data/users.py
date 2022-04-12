@@ -12,6 +12,7 @@ class User(SqlAlchemyBase, UserMixin):
     email = sqlalchemy.Column(sqlalchemy.String, nullable=False, unique=True)
     name = sqlalchemy.Column(sqlalchemy.String, nullable=False, unique=True)
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    about = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     desserts = orm.relation("Dessert", back_populates='user')
 
     def __repr__(self):

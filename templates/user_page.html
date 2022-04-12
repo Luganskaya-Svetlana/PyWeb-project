@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{{user.name}}</h1>
+<img src="../static/img/user_avatars/{{user.id}}.jpg"
+       alt="Картинка профиля {{user.name}}">
+{% for item in user.about.split('\r\n')%}
+    <p>{{item}}</p>
+{% endfor %}
+{% if current_user.is_authenticated and current_user == user %}
+                <div>
+                    <a href="/desserts/edit/{{ user.id }}" class="btn btn-outline-warning">Изменить</a>
+                    <a href="/desserts/delete/{{ user.id }}" class="btn btn-outline-danger">Удалить</a>
+                </div>
+{% endif %}
+{% endblock content %}
