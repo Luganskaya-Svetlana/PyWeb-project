@@ -35,21 +35,21 @@ if __name__ == '__main__':
     print(if_country('-'))
     print(if_country('россия'))
     print(if_country('Австралия'))
-#     map_file1 = "map1.png"
-#     with open(map_file1, "wb") as file:
-#         file.write(map_image('Италия'))
-#
-#     pygame.init()
-#     screen = pygame.display.set_mode((600, 450))
-#     screen.blit(pygame.image.load(map_file1), (0, 0))
-#     pygame.display.flip()
-#     running = True
-#     while running:
-#         for event in pygame.event.get():
-#             if event.type == pygame.QUIT:
-#                 running = False
-#         pygame.display.flip()
-#
-#     pygame.quit()
-#     os.remove(map_file1)
+    map_file1 = "map1.png"
+    with open(map_file1, "wb") as file:
+        file.write(map_image('Италия'))
+
+    pygame.init()
+    screen = pygame.display.set_mode((600, 450))
+    screen.blit(pygame.image.load(map_file1), (0, 0))
+    pygame.display.flip()
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+        pygame.display.flip()
+
+    pygame.quit()
+    os.remove(map_file1)
 

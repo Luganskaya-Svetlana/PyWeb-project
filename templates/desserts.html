@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Добавление десерта</h1>
-    <form action="" method="post">
+    <h1>{{title}}</h1>
+    <form action="" method="post" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
         <p>
             {{ form.title.label }}<br>
@@ -30,6 +30,10 @@
                     {{ error }}
                 </p>
             {% endfor %}
+        </p>
+        <p>
+            Прикрепите фотографию рецепта: <br>
+            <input type="file" name="recipe_photo" accept="image/*">
         </p>
         <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
         {{ message }}
