@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Все десерты</h2>
+    {% for item in desserts %}
+        <div class="col-md6 border rounded">
+            <a href="/desserts/{{item.id}}"><h4>{{ item.title }}</h4></a>
+            <div>
+                {{ item.content.split('\r\n')[0] }}
+            </div>
+            <div>
+                Автор - {{ item.user.name }}, Дата добавления - {{ item.created_date }}
+            </div>
+            {% if current_user.is_authenticated and current_user == item.user %}
+                <div>
+                    <a href="/desserts/edit/{{ item.id }}" class="btn btn-outline-warning">Изменить</a>
+                    <a href="/desserts/delete/{{ item.id }}" class="btn btn-outline-danger">Удалить</a>
+                </div>
+            {% endif %}
+        </div>
+    {% endfor %}
+{% endblock %}
