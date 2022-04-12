@@ -2,10 +2,18 @@
 
 {% block content %}
 <h1>{{dessert.title}}</h1>
-<h6>Добавил(а): {{dessert.user.name}}</h6>
+<h6>Добавил(а): {{dessert.user.name}}, {{dessert.created_date}}</h6>
+<img src="../static/img/dessert_photos/{{dessert.id}}.jpg"
+       alt="{{dessert.name}}">
 {% for item in dessert.content.split('\r\n')%}
     <p>{{item}}</p>
 {% endfor %}
+<figure>
+  <img src="../static/img/dessert_maps/{{dessert.id}}.jpg"
+       alt="Карта, на которой отмечена родина десерта">
+
+  <figcaption>Родина десерта - {{dessert.country}}</figcaption>
+</figure>
 {% if current_user.is_authenticated and current_user == dessert.user %}
                 <div>
                     <a href="/desserts/edit/{{ dessert.id }}" class="btn btn-outline-warning">Изменить</a>

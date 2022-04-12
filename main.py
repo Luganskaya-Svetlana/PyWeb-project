@@ -15,7 +15,7 @@ import sqlalchemy
 from data import db_session
 from data.users import User
 from data.desserts import Dessert
-from data.map import if_country
+from data.map import if_country, map_image
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'our_secret_key'
@@ -49,7 +49,7 @@ class DessertForm(FlaskForm):
     country = StringField('Родина десерта:', validators=[DataRequired()])
     submit = SubmitField("Добавить")
 
-    def validate_country(form, field):
+    def validate_country(self, field):
         if not if_country(field.data):
             raise ValidationError(f'{field.data} - не страна')
 
@@ -108,7 +108,6 @@ def register():
             extension = DEFAULT_USER_AVATAR[DEFAULT_USER_AVATAR.find('.'):]
             copy(url + f"/{DEFAULT_USER_AVATAR}", url + f"/user_avatars/{user.id}{extension}")
         login_user(user, remember=True)
-
         return redirect("/")
     return render_template("register.html", title="Регистрация", form=form)
 
@@ -161,26 +160,18 @@ def add_dessert():
         try:
             db_sess.add(dessert)
             db_sess.commit()
-            photo = request.files.get("recipe_photo")
-            print(photo)
-            print(dessert.id)
-            if photo:
-                print("user photo")
-                print(photo.filename)
-                url = url_for('static', filename="img/dessert_photos")[1:]
-                photo.save(url + f"/{photo.filename}")
-                os.rename(url + f"/{photo.filename}", url + f"/{dessert.id}{photo.filename[photo.filename.find('.'):]}")
-            else:
-                print("default photo")
-                url = url_for('static', filename=f"img")[1:]
-                extension = DEFAULT_DESSERT_AVATAR[DEFAULT_DESSERT_AVATAR.find('.'):]
-                print(url + f"/{DEFAULT_DESSERT_AVATAR}")
-                print(os.path.exists(url + f"/{DEFAULT_DESSERT_AVATAR}"))
-                print(f"{dessert.id}{extension}")
-                copy(url + f"/{DEFAULT_DESSERT_AVATAR}", url + f"/dessert_photos/{dessert.id}{extension}")
         except sqlalchemy.orm.exc.DetachedInstanceError:
             return render_template('desserts.html', title='Добавление десерта', form=form,
-                                   message='Ой! Что-то пошло не так. Попробуйте снова.')  # надеюсь, удалю потом эту строчку
+                                   message='Ой! Что-то пошло не так. Попробуйте снова.')
+        photo = request.files.get("recipe_photo")
+        if photo:
+            url = url_for('static', filename="img/dessert_photos")[1:]
+            photo.save(url + f"/{photo.filename}")
+            os.rename(url + f"/{photo.filename}", url + f"/{dessert.id}.jpg")
+        else:
+            url = url_for('static', filename=f"img")[1:]
+            copy(url + f"/{DEFAULT_DESSERT_AVATAR}", url + f"/dessert_photos/{dessert.id}.jpg")
+        map_image(dessert.country, dessert.id)
         return redirect('/')
     return render_template('desserts.html', title='Добавление десерта', form=form)
 
@@ -205,7 +196,14 @@ def edit_desserts(id):
             dessert.title = form.title.data
             dessert.content = form.content.data
             dessert.country = form.country.data
+            map_image(dessert.country, dessert.id)
             db_sess.commit()
+            photo = request.files.get("recipe_photo")
+            if photo:
+                url = url_for('static', filename="img/dessert_photos")[1:]
+                os.remove(url + f"/{dessert.id}.jpg")
+                photo.save(url + f"/{photo.filename}")
+                os.rename(url + f"/{photo.filename}", url + f"/{dessert.id}.jpg")
             return redirect('/')
         else:
             abort(404)

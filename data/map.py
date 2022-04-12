@@ -1,6 +1,9 @@
-import os
-import pygame
+from flask import url_for
+from shutil import copy
 import requests
+import os.path
+
+DEFAULT_DESSERT_MAP = "default_map_pic.jpg"
 
 
 def if_country(country):
@@ -9,14 +12,15 @@ def if_country(country):
             f"http://geocode-maps.yandex.ru/1.x/?apikey=40d1649f-0493-4b70-98ba-98533de7710b&geocode={country}&format=json")
         if response:
             json_response = response.json()
-            return json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]["metaDataProperty"][
-                       "GeocoderMetaData"]["kind"] == 'country'
+            return \
+            json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]["metaDataProperty"][
+                "GeocoderMetaData"]["kind"] == 'country'
     except IndexError:
         return False
     return False
 
 
-def map_image(country):
+def map_image(country, id):
     if if_country(country):
         response = requests.get(f"http://geocode-maps.yandex.ru/1.x/?apikey=40d1649f-0493-4b70-98ba-98533de7710b&geocode={country}&format=json")
         if response:
@@ -25,31 +29,14 @@ def map_image(country):
                 json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]["Point"]["pos"]).split()))
             response = requests.get(
                 f"https://static-maps.yandex.ru/1.x/?ll={latitude},{longitude}&spn=25,25&l=map&pt={latitude},{longitude},pm2vvm")
-            return response.content
-        print("Http статус:", response.status_code, "(", response.reason, ")")
+            filename = f'{id}.jpg'
+            url = url_for('static', filename="img/dessert_maps")[1:]
+            with open(url+f'/{filename}', "wb") as file:
+                file.write(response.content)
+        else:
+            url = url_for('static', filename=f"img")[1:]
+            copy(url + f"/{DEFAULT_DESSERT_MAP}", url + f"/dessert_maps/{id}.jpg")
 
 
-'''Для тестирования'''
-if __name__ == '__main__':
-    print(if_country(''))
-    print(if_country('-'))
-    print(if_country('россия'))
-    print(if_country('Австралия'))
-    map_file1 = "map1.png"
-    with open(map_file1, "wb") as file:
-        file.write(map_image('Италия'))
 
-    pygame.init()
-    screen = pygame.display.set_mode((600, 450))
-    screen.blit(pygame.image.load(map_file1), (0, 0))
-    pygame.display.flip()
-    running = True
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-        pygame.display.flip()
-
-    pygame.quit()
-    os.remove(map_file1)
 
