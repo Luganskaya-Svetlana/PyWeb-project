@@ -9,7 +9,7 @@
                 {{ item.content.split('\r\n')[0] }}
             </div>
             <div>
-                Автор - {{ item.user.name }}, Дата добавления - {{ item.created_date }}
+                Автор - <a href="/profile/{{item.user.id}}">{{ item.user.name }}</a>, Дата добавления - {{ item.created_date }}
             </div>
             {% if current_user.is_authenticated and current_user == item.user %}
                 <div>

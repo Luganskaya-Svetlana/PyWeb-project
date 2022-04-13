@@ -3,21 +3,23 @@
 {% block content %}
 <h1>{{dessert.title}}</h1>
 <h6>Добавил(а): {{dessert.user.name}}, {{dessert.created_date}}</h6>
-<img src="../static/img/dessert_photos/{{dessert.id}}.jpg"
-       alt="{{dessert.title}}">
-{% for item in dessert.content.split('\r\n')%}
-    <p>{{item}}</p>
-{% endfor %}
-<figure>
-  <img src="../static/img/dessert_maps/{{dessert.id}}.jpg"
-       alt="Карта, на которой отмечена родина десерта">
 
-  <figcaption>Родина десерта - {{dessert.country}}</figcaption>
+<p><img src="../static/img/dessert_photos/{{dessert.id}}.jpg"
+                       alt="{{dessert.title}}" width="500" vspace="5" hspace="5" align="middle"></p>
+{% for item in dessert.content.split('\r\n')%}
+<p>{{item}}</p>
+{% endfor %}
+
+<figure>
+    <img src="../static/img/dessert_maps/{{dessert.id}}.jpg"
+                           alt="Карта, на которой отмечена родина десерта" vspace="5" hspace="5" >
+
+    <figcaption>Родина десерта - {{dessert.country}}</figcaption>
 </figure>
 {% if current_user.is_authenticated and current_user == dessert.user %}
-                <div>
-                    <a href="/desserts/edit/{{ dessert.id }}" class="btn btn-outline-warning">Изменить</a>
-                    <a href="/desserts/delete/{{ dessert.id }}" class="btn btn-outline-danger">Удалить</a>
-                </div>
+<div>
+    <a href="/desserts/edit/{{ dessert.id }}" class="btn btn-outline-warning">Изменить</a>
+    <a href="/desserts/delete/{{ dessert.id }}" class="btn btn-outline-danger">Удалить</a>
+</div>
 {% endif %}
 {% endblock content %}

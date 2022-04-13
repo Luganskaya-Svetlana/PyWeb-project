@@ -1,16 +1,35 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>{{user.name}}</h1>
+<h1 align="center">{{user.name}}</h1>
 <img src="../static/img/user_avatars/{{user.id}}.jpg"
-       alt="Картинка профиля {{user.name}}">
+     alt="Картинка профиля {{user.name}}" align="left"
+     vspace="5" hspace="5" width="500">
 {% for item in user.about.split('\r\n')%}
-    <p>{{item}}</p>
+<p>{{item}}</p>
 {% endfor %}
 {% if current_user.is_authenticated and current_user == user %}
-                <div>
-                    <a href="/desserts/edit/{{ user.id }}" class="btn btn-outline-warning">Изменить</a>
-                    <a href="/desserts/delete/{{ user.id }}" class="btn btn-outline-danger">Удалить</a>
-                </div>
+<div>
+    <a href="/profile/edit/{{ user.id }}" class="btn btn-outline-warning">Изменить профиль</a>
+    <a href="/profile/delete/{{ user.id }}" class="btn btn-outline-danger">Удалить профиль</a>
+</div>
 {% endif %}
+<h4>Десерты пользователя {{user.name}}:</h4>
+{% for item in user.desserts %}
+<div class="col-md6 border rounded">
+    <a href="/desserts/{{item.id}}"><h4>{{ item.title }}</h4></a>
+    <div>
+        {{ item.content.split('\r\n')[0] }}
+    </div>
+    <div>
+        Дата добавления - {{ item.created_date }}
+    </div>
+    {% if current_user.is_authenticated and current_user == item.user %}
+    <div>
+        <a href="/desserts/edit/{{ item.id }}" class="btn btn-outline-warning">Изменить</a>
+        <a href="/desserts/delete/{{ item.id }}" class="btn btn-outline-danger">Удалить</a>
+    </div>
+    {% endif %}
+</div>
+{% endfor %}
 {% endblock content %}

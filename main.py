@@ -140,6 +140,39 @@ def profile(id):
         abort(404)
 
 
+@app.route('/profile/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_profile(id):
+    form = RegisterForm()
+    if request.method == "GET":
+        db_sess = db_session.create_session()
+        user = db_sess.query(User).filter(User.id == id, User.id == current_user.id).first()
+        if user:
+            form.name.data = user.name
+            form.about.data = user.about
+            form.email.data = user.email
+        else:
+            abort(404)
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        user = db_sess.query(User).filter(User.id == id, User.id == current_user.id).first()
+        if user:
+            user.name = form.name.data
+            user.email = form.email.data
+            user.about = form.about.data
+            db_sess.commit()
+            photo = request.files.get("avatar")
+            if photo:
+                url = url_for('static', filename="img/user_avatars")[1:]
+                os.remove(url + f"/{user.id}.jpg")
+                photo.save(url + f"/{photo.filename}")
+                os.rename(url + f"/{photo.filename}", url + f"/{user.id}.jpg")
+            return redirect('/')
+        else:
+            abort(404)
+    return render_template('register.html', title='Редактирование профиля', form=form)
+
+
 @app.route("/desserts/<int:id>", methods=['GET', 'POST'])
 def dessert_page(id):
     db_sess = db_session.create_session()
