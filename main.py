@@ -7,7 +7,7 @@ from flask import redirect, render_template, url_for, request
 from flask_login import LoginManager
 from flask_login import login_user, logout_user, login_required
 from flask_wtf import FlaskForm
-from wtforms import EmailField, PasswordField, BooleanField, FileField
+from wtforms import EmailField, PasswordField, BooleanField
 from wtforms import SubmitField, StringField, TextAreaField
 from wtforms.validators import DataRequired, ValidationError
 import sqlalchemy
@@ -173,6 +173,27 @@ def edit_profile(id):
     return render_template('register.html', title='Редактирование профиля', form=form)
 
 
+@app.route('/profile/delete/<int:id>', methods=['GET'])
+@login_required
+def delete_user(id):
+    db_sess = db_session.create_session()
+    user = db_sess.query(User).filter(User.id == id, User.id == current_user.id).first()
+    if user:
+        for dessert in user.desserts:
+            url = url_for('static', filename="img/dessert_photos")[1:]
+            os.remove(url + f"/{dessert.id}.jpg")
+            url = url_for('static', filename="img/dessert_maps")[1:]
+            os.remove(url + f"/{dessert.id}.jpg")
+            db_sess.delete(dessert)
+        db_sess.delete(user)
+        db_sess.commit()
+        url = url_for('static', filename="img/user_avatars")[1:]
+        os.remove(url + f"/{id}.jpg")
+    else:
+        abort(404)
+    return redirect('/')
+
+
 @app.route("/desserts/<int:id>", methods=['GET', 'POST'])
 def dessert_page(id):
     db_sess = db_session.create_session()
@@ -255,6 +276,10 @@ def delete_dessert(id):
     if dessert:
         db_sess.delete(dessert)
         db_sess.commit()
+        url = url_for('static', filename="img/dessert_photos")[1:]
+        os.remove(url + f"/{id}.jpg")
+        url = url_for('static', filename="img/dessert_maps")[1:]
+        os.remove(url + f"/{id}.jpg")
     else:
         abort(404)
     return redirect('/')
