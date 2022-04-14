@@ -40,14 +40,14 @@ class RegisterForm(FlaskForm):
     password = PasswordField("Пароль", validators=[DataRequired()])
     password_again = PasswordField("Пароль ещё раз", validators=[DataRequired()])
     about = TextAreaField("Немного о себе", validators=[DataRequired()])
-    submit = SubmitField("Зарегистрироваться")
+    submit = SubmitField("Готово")
 
 
 class DessertForm(FlaskForm):
     title = StringField('Название десерта:', validators=[DataRequired()])
     content = TextAreaField('Описание', validators=[DataRequired()])
     country = StringField('Родина десерта:', validators=[DataRequired()])
-    submit = SubmitField("Добавить")
+    submit = SubmitField("Готово")
 
     def validate_country(self, field):
         if not if_country(field.data):
