@@ -18,15 +18,15 @@
     </head>
     <body>
         <header>
-            <nav class="navbar navbar-light bg-light">
+            <nav class="navbar navbar-light" style="background-color: white;">
                 <img src="../../static/img/favicon.ico" width="75" height="75" alt="">
                 <a class="navbar-brand" href="/"><h1>Cicero's desserts</h1></a>
                 {% if current_user.is_authenticated %}
                     <a class="navbar-brand" href="/logout">{{ current_user.name }}</a>
                 {% else %}
                     <p>
-                        <a class="btn btn-primary " href="/register">Зарегистрироваться</a>
-                        <a class="btn btn-success" href="/login">Войти</a>
+                        <a class="btn btn-info" href="/register">Зарегистрироваться</a>
+                        <a class="btn btn-light" href="/login">Войти</a>
                     </p>
                 {% endif %}
                 <span class="navbar-text">

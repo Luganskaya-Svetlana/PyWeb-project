@@ -42,6 +42,12 @@ class RegisterForm(FlaskForm):
     about = TextAreaField("Немного о себе", validators=[DataRequired()])
     submit = SubmitField("Готово")
 
+    def validate_name(self, field):
+        db_sess = db_session.create_session()
+        user = db_sess.query(User).filter(User.name == field.data).first()
+        if user:
+            raise ValidationError('Выбранное имя пользователя уже занято')
+
 
 class DessertForm(FlaskForm):
     title = StringField('Название десерта:', validators=[DataRequired()])
