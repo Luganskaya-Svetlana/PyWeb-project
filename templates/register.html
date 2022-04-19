@@ -40,6 +40,11 @@
                 </p>
             {% endfor %}
         </p>
+        {% if special_message %}
+            <p class="alert alert-danger" role="alert">
+                {{special_message}}
+            </p>
+        {% endif %}
         <p>
             {{ form.about.label }}<br>
             {{ form.about(class="form-control") }}<br>

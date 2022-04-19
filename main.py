@@ -49,6 +49,15 @@ class RegisterForm(FlaskForm):
             raise ValidationError('Выбранное имя пользователя уже занято')
 
 
+class EditForm(FlaskForm):
+    email = EmailField("Ваша почта: ", validators=[DataRequired()])
+    name = StringField("Ваш никнейм: ", validators=[DataRequired()])
+    password = PasswordField("Новый пароль")
+    password_again = PasswordField("Новый пароль ещё раз")
+    about = TextAreaField("Ваше описание профиля", validators=[DataRequired()])
+    submit = SubmitField("Готово")
+
+
 class DessertForm(FlaskForm):
     title = StringField('Название десерта:', validators=[DataRequired()])
     content = TextAreaField('Описание', validators=[DataRequired()])
@@ -149,7 +158,7 @@ def profile(id):
 @app.route('/profile/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit_profile(id):
-    form = RegisterForm()
+    form = EditForm()
     if request.method == "GET":
         db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.id == id, User.id == current_user.id).first()
@@ -166,6 +175,17 @@ def edit_profile(id):
             user.name = form.name.data
             user.email = form.email.data
             user.about = form.about.data
+            new_pass = form.password.data
+            if new_pass:
+                if not form.password_again.data:
+                    return render_template('register.html', title='Редактирование профиля', form=form,
+                                           special_message="Введите пароль ещё раз, либо "
+                                                           "очистите поле редактирования пароля")
+                elif form.password_again.data != new_pass:
+                    return render_template('register.html', title='Редактирование профиля', form=form,
+                                           special_message="Введённые пароли не совпадают")
+                else:
+                    user.set_password(form.password.data)
             db_sess.commit()
             photo = request.files.get("avatar")
             if photo:
