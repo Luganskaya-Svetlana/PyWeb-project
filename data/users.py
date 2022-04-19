@@ -12,7 +12,7 @@ class User(SqlAlchemyBase, UserMixin):
     email = sqlalchemy.Column(sqlalchemy.String, nullable=False, unique=True)
     name = sqlalchemy.Column(sqlalchemy.String, nullable=False, unique=True)
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=False)
-    desserts = orm.relation("Dessert", back_populates='user')
+    desserts = orm.relation("Dessert", back_populates='user', lazy='subquery')
 
     def __repr__(self):
         return f'<User> {self.id} {self.name}'

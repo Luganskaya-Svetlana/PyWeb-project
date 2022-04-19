@@ -158,25 +158,27 @@ def add_dessert():
         dessert.content = form.content.data
         dessert.country = form.country.data
         dessert.user_id = current_user.id
+
         try:
             db_sess.add(dessert)
             db_sess.commit()
             photo = request.files.get("recipe_photo")
-            print(photo)
-            print(dessert.id)
+            # print(dessert.user)
+            # print(photo)
+            # print(dessert.id)
             if photo:
-                print("user photo")
-                print(photo.filename)
+                # print("user photo")
+                # print(photo.filename)
                 url = url_for('static', filename="img/dessert_photos")[1:]
                 photo.save(url + f"/{photo.filename}")
                 os.rename(url + f"/{photo.filename}", url + f"/{dessert.id}{photo.filename[photo.filename.find('.'):]}")
             else:
-                print("default photo")
+                # print("default photo")
                 url = url_for('static', filename=f"img")[1:]
                 extension = DEFAULT_DESSERT_AVATAR[DEFAULT_DESSERT_AVATAR.find('.'):]
-                print(url + f"/{DEFAULT_DESSERT_AVATAR}")
-                print(os.path.exists(url + f"/{DEFAULT_DESSERT_AVATAR}"))
-                print(f"{dessert.id}{extension}")
+                # print(url + f"/{DEFAULT_DESSERT_AVATAR}")
+                # print(os.path.exists(url + f"/{DEFAULT_DESSERT_AVATAR}"))
+                # print(f"{dessert.id}{extension}")
                 copy(url + f"/{DEFAULT_DESSERT_AVATAR}", url + f"/dessert_photos/{dessert.id}{extension}")
         except sqlalchemy.orm.exc.DetachedInstanceError:
             return render_template('desserts.html', title='Добавление десерта', form=form,
