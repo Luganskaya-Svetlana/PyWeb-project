@@ -2,7 +2,7 @@
 
 {% block content %}
 <h1>{{dessert.title}}</h1>
-<h6>Добавил(а): {{dessert.user.name}}, {{dessert.created_date}}</h6>
+<h6>Добавил(а): <a href="/profile/{{dessert.user.id}}">{{dessert.user.name}}</a>, {{dessert.created_date}}</h6>
 
 <p><img src="../static/img/dessert_photos/{{dessert.id}}.jpg"
                        alt="{{dessert.title}}" width="500" vspace="5" hspace="5" align="middle"></p>
