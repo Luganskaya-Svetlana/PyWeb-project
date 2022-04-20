@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Cicero's recipres</title>
+  <style>
+      :root {
+          --bg1: url('{{ url_for('static', filename='img/start_page/bg.svg', _external=True) }}');
+          --bg2: url('{{ url_for('static', filename='img/start_page/first_bg.jpg', _external=True) }}');
+          --bg3: url('{{ url_for('static', filename='img/start_page/second_bg.jpg', _external=True) }}');
+      }
+  </style>
+  <link rel="stylesheet" href="{{url_for('static', filename='css/fp_style.css')}}">
+</head>
+<body>
+  <header class="header">
+    <h2 class="header__title">Добро пожаловать в<br>Cicero's desserts!</h2>
+  </header>
+  <div class="article article_whitebg article_first">
+    <h2 class="black">АКА Рецепты хомячка Цицерона)</h2>
+    <p class="black">Здесь вы сможете публиковать <strong>свои</strong> рецепты или просматривать опубликованные другими пользователями. Только не забудьте узнать родину (страну) своего рецепта - без неё публикация дессерта невозможна!</p>
+    <img src="{{url_for('static', filename='img/start_page/headline_img1.png')}}" alt="Рецепт утки по-пекински">
+    <img src="{{url_for('static', filename='img/start_page/headline_img2.png')}}" alt="Японская булочка" class="right">
+  </div>
+  <article class="article article_bluebg article_second">
+    <h2 class="white">Зрегистрируйся!</h2>
+    <p class="white">Присоединяйся к нашему дружному сообществу - или авторизуйся, если уже сделал это раньше :)</p>
+    <p>
+        <a class="form_button" href="/register">Зарегистрироваться</a>
+        <a class="form_button" href="/login">Войти</a>
+    </p>
+  </article>
+</body>
+</html>

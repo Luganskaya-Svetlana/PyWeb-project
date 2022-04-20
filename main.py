@@ -87,6 +87,12 @@ def default_page():
     db_sess = db_session.create_session()
     desserts = db_sess.query(Dessert)[::-1]
     return render_template("index.html", title="Cicero's desserts", current_user=current_user, desserts=desserts)
+    # return redirect("/test")
+
+
+@app.route("/test")
+def test_page():
+    return render_template("start_page.html")
 
 
 @app.route("/register", methods=["GET", "POST"])
