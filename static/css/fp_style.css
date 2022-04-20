@@ -139,21 +139,21 @@ p {
 }
 
 .form_button {
-  text-decoration: none;
-  display: inline-block;
-  padding: 12px 32px;
-  transition: all 0.3s ease-out;
-  text-transform: uppercase;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  outline: none;
-  background-color: #02f;
-  background-clip: border-box;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 1.5em;
-  font-weight: 700;
-  margin: auto;
+    text-decoration: none;
+    display: inline-block;
+    padding: 12px 32px;
+    transition: all 0.3s ease-out;
+    text-transform: uppercase;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    outline: none;
+    background-color: #02f;
+    background-clip: border-box;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.5em;
+    font-weight: 700;
+    margin: auto;
 }
 
 .form_button:hover {

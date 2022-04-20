@@ -86,8 +86,10 @@ def logout():
 def default_page():
     db_sess = db_session.create_session()
     desserts = db_sess.query(Dessert)[::-1]
-    return render_template("index.html", title="Cicero's desserts", current_user=current_user, desserts=desserts)
-    # return redirect("/test")
+    if current_user.is_authenticated:
+        return render_template("index.html", title="Cicero's desserts", current_user=current_user, desserts=desserts)
+    else:
+        return render_template("start_page.html")
 
 
 @app.route("/test")
