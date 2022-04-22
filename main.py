@@ -2,20 +2,23 @@ import os.path
 
 from shutil import copy
 from flask_login import current_user
-from flask import Flask, abort
-from flask import redirect, render_template, url_for, request
+from flask import Flask, abort, redirect, render_template
+from flask import url_for, request, make_response, jsonify
 from flask_login import LoginManager
 from flask_login import login_user, logout_user, login_required
 from flask_wtf import FlaskForm
-from wtforms import EmailField, PasswordField, BooleanField
-from wtforms import SubmitField, StringField, TextAreaField
+from wtforms import EmailField, PasswordField
+from wtforms import SubmitField, StringField
+from wtforms import BooleanField, TextAreaField
 from wtforms.validators import DataRequired, ValidationError
 import sqlalchemy
+from flask_restful import Api
 
 from data import db_session
 from data.users import User
 from data.desserts import Dessert
 from data.map import if_country, map_image
+from data import desserts_recources
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'our_secret_key'
@@ -25,6 +28,11 @@ login_manager.init_app(app)
 APP_ROUTE = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_USER_AVATAR = "default_user_pic.png"
 DEFAULT_DESSERT_AVATAR = "default_des_pic.jpg"
+
+api = Api(app)
+
+api.add_resource(desserts_recources.DessertListResource, '/api/desserts')
+api.add_resource(desserts_recources.DessertResource, '/api/dessert/<int:dessert_id>')
 
 
 class LoginForm(FlaskForm):
@@ -67,6 +75,11 @@ class DessertForm(FlaskForm):
     def validate_country(self, field):
         if not if_country(field.data):
             raise ValidationError(f'{field.data} - не страна')
+
+
+@app.errorhandler(404)
+def not_found(error):
+    return make_response(jsonify({'error': 'Not found'}), 404)
 
 
 @login_manager.user_loader
@@ -321,7 +334,7 @@ def delete_dessert(id):
 
 def main():
     db_session.global_init("db/all.db")
-    app.run(port=8000, debug=True)
+    app.run(port=5000, debug=True)
 
 
 if __name__ == '__main__':

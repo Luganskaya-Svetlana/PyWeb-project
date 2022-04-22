@@ -1,7 +1,6 @@
 from flask import url_for
 from shutil import copy
 import requests
-import os.path
 
 DEFAULT_DESSERT_MAP = "default_map_pic.jpg"
 
