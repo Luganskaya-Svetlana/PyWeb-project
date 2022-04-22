@@ -12,7 +12,7 @@ class Dessert(SqlAlchemyBase):
     title = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     content = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     country = sqlalchemy.Column(sqlalchemy.String, nullable=False)
-    created_date = sqlalchemy.Column(sqlalchemy.String, default=datetime.datetime.now().strftime('%m.%d.%Y, %H:%M'))
+    created_date = sqlalchemy.Column(sqlalchemy.String, default=datetime.datetime.now().strftime('%d.%m.%Y, %H:%M'))
 
     user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"))
     user = orm.relation('User')
